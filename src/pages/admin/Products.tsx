@@ -1,119 +1,104 @@
 import { useState } from "react";
 import { Search, Plus, Star, MoreHorizontal } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { products, categories } from "@/data/mock-data";
+import { products as initialProducts, categories } from "@/data/mock-data";
+import { useTranslation } from "@/context/LanguageContext";
+import { Product } from "@/types/ecommerce";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 const AdminProducts = () => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [productList, setProductList] = useState<Product[]>(initialProducts);
+  const [open, setOpen] = useState(false);
 
-  const filtered = products.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = !categoryFilter || p.categorySlug === categoryFilter;
-    return matchesSearch && matchesCategory;
+  const filtered = productList.filter(p => {
+    const ms = p.name.toLowerCase().includes(search.toLowerCase());
+    const mc = !categoryFilter || p.categorySlug === categoryFilter;
+    return ms && mc;
   });
+
+  const handleAdd = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const cat = categories.find(c => c.slug === fd.get("category")) || categories[0];
+    const newProduct: Product = {
+      id: `p${Date.now()}`, name: fd.get("name") as string, slug: (fd.get("name") as string).toLowerCase().replace(/\s+/g, "-"),
+      description: fd.get("description") as string, price: Number(fd.get("price")),
+      compareAtPrice: fd.get("comparePrice") ? Number(fd.get("comparePrice")) : undefined,
+      images: ["/placeholder.svg"], category: cat.name, categorySlug: cat.slug,
+      tags: (fd.get("tags") as string || "").split(",").map(t => t.trim()).filter(Boolean),
+      rating: 0, reviewCount: 0, inStock: true, stockCount: Number(fd.get("stock") || 0),
+    };
+    setProductList(prev => [newProduct, ...prev]);
+    setOpen(false);
+    toast.success(t("common.success"), { description: newProduct.name });
+  };
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-display text-2xl text-foreground">Products</h1>
-            <p className="font-body text-sm text-muted-foreground mt-1">{products.length} total products</p>
-          </div>
-          <Button className="font-body">
-            <Plus className="w-4 h-4 mr-2" /> Add Product
-          </Button>
+          <div><h1 className="font-display text-2xl text-foreground">{t("admin.products")}</h1><p className="font-body text-sm text-muted-foreground mt-1">{productList.length} {t("admin.totalProducts")}</p></div>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild><Button className="font-body"><Plus className="w-4 h-4 me-2" />{t("admin.addProduct")}</Button></DialogTrigger>
+            <DialogContent className="max-w-lg"><DialogHeader><DialogTitle className="font-display">{t("admin.addProduct")}</DialogTitle></DialogHeader>
+              <form onSubmit={handleAdd} className="space-y-4 max-h-[70vh] overflow-y-auto pe-2">
+                <div><Label className="font-body text-sm">{t("form.productName")}</Label><Input name="name" required className="mt-1" /></div>
+                <div><Label className="font-body text-sm">{t("form.description")}</Label><Textarea name="description" required className="mt-1" /></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label className="font-body text-sm">{t("form.price")}</Label><Input name="price" type="number" step="0.01" required className="mt-1" /></div>
+                  <div><Label className="font-body text-sm">{t("form.comparePrice")}</Label><Input name="comparePrice" type="number" step="0.01" className="mt-1" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label className="font-body text-sm">{t("form.category")}</Label>
+                    <Select name="category" defaultValue="clothing"><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>
+                      {categories.map(c => <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>)}
+                    </SelectContent></Select></div>
+                  <div><Label className="font-body text-sm">{t("form.stock")}</Label><Input name="stock" type="number" required className="mt-1" /></div>
+                </div>
+                <div><Label className="font-body text-sm">{t("form.tags")}</Label><Input name="tags" className="mt-1" placeholder="luxury, premium" /></div>
+                <Button type="submit" className="w-full font-body">{t("form.save")}</Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
-
-        {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 font-body"
-            />
-          </div>
+          <div className="relative flex-1"><Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" /><Input placeholder={`${t("common.search")}...`} value={search} onChange={e => setSearch(e.target.value)} className="ps-9 font-body" /></div>
           <div className="flex gap-2 flex-wrap">
-            <Button variant={!categoryFilter ? "default" : "outline"} size="sm" className="font-body text-xs" onClick={() => setCategoryFilter("")}>All</Button>
-            {categories.map(cat => (
-              <Button key={cat.id} variant={categoryFilter === cat.slug ? "default" : "outline"} size="sm" className="font-body text-xs" onClick={() => setCategoryFilter(cat.slug)}>
-                {cat.name}
-              </Button>
-            ))}
+            <Button variant={!categoryFilter ? "default" : "outline"} size="sm" className="font-body text-xs" onClick={() => setCategoryFilter("")}>{t("common.all")}</Button>
+            {categories.map(c => <Button key={c.id} variant={categoryFilter === c.slug ? "default" : "outline"} size="sm" className="font-body text-xs" onClick={() => setCategoryFilter(c.slug)}>{c.name}</Button>)}
           </div>
         </div>
-
-        {/* Table */}
-        <div className="border border-border rounded-lg overflow-hidden bg-card">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="font-body text-xs">Product</TableHead>
-                  <TableHead className="font-body text-xs">Category</TableHead>
-                  <TableHead className="font-body text-xs text-right">Price</TableHead>
-                  <TableHead className="font-body text-xs text-right">Stock</TableHead>
-                  <TableHead className="font-body text-xs">Rating</TableHead>
-                  <TableHead className="font-body text-xs">Status</TableHead>
-                  <TableHead className="font-body text-xs w-10"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.map((product) => (
-                  <TableRow key={product.id} className="hover:bg-secondary/30">
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-secondary rounded overflow-hidden flex-shrink-0">
-                          <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
-                        </div>
-                        <span className="font-body text-sm font-medium text-foreground">{product.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-body text-sm text-muted-foreground">{product.category}</TableCell>
-                    <TableCell className="font-body text-sm text-foreground text-right">
-                      ${product.price}
-                      {product.compareAtPrice && (
-                        <span className="text-xs text-muted-foreground line-through ml-1">${product.compareAtPrice}</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <span className={`font-body text-sm ${product.stockCount < 20 ? "text-warning font-medium" : "text-foreground"}`}>
-                        {product.stockCount}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-accent text-accent" />
-                        <span className="font-body text-sm text-foreground">{product.rating}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={product.inStock ? "outline" : "destructive"} className="font-body text-xs">
-                        {product.inStock ? "Active" : "Sold Out"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+        <div className="border border-border rounded-lg overflow-hidden bg-card"><div className="overflow-x-auto">
+          <Table><TableHeader><TableRow>
+            <TableHead className="font-body text-xs">{t("admin.products")}</TableHead><TableHead className="font-body text-xs">{t("form.category")}</TableHead>
+            <TableHead className="font-body text-xs text-right">{t("form.price")}</TableHead><TableHead className="font-body text-xs text-right">{t("form.stock")}</TableHead>
+            <TableHead className="font-body text-xs">Rating</TableHead><TableHead className="font-body text-xs">{t("form.status")}</TableHead><TableHead className="w-10"></TableHead>
+          </TableRow></TableHeader>
+          <TableBody>{filtered.map(p => (
+            <TableRow key={p.id} className="hover:bg-secondary/30">
+              <TableCell><div className="flex items-center gap-3"><div className="w-10 h-10 bg-secondary rounded overflow-hidden flex-shrink-0"><img src={p.images[0]} alt="" className="w-full h-full object-cover" /></div><span className="font-body text-sm font-medium text-foreground">{p.name}</span></div></TableCell>
+              <TableCell className="font-body text-sm text-muted-foreground">{p.category}</TableCell>
+              <TableCell className="font-body text-sm text-foreground text-right">${p.price}{p.compareAtPrice && <span className="text-xs text-muted-foreground line-through ms-1">${p.compareAtPrice}</span>}</TableCell>
+              <TableCell className="text-right"><span className={`font-body text-sm ${p.stockCount < 20 ? "text-warning font-medium" : "text-foreground"}`}>{p.stockCount}</span></TableCell>
+              <TableCell><div className="flex items-center gap-1"><Star className="w-3 h-3 fill-accent text-accent" /><span className="font-body text-sm">{p.rating}</span></div></TableCell>
+              <TableCell><Badge variant={p.inStock ? "outline" : "destructive"} className="font-body text-xs">{p.inStock ? t("common.active") : t("product.soldOut")}</Badge></TableCell>
+              <TableCell><Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast.info(`${t("common.edit")}: ${p.name}`)}><MoreHorizontal className="w-4 h-4" /></Button></TableCell>
+            </TableRow>
+          ))}</TableBody></Table>
+        </div></div>
       </div>
     </AdminLayout>
   );
 };
-
 export default AdminProducts;
