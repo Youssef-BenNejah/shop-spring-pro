@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { translations, Language } from "@/data/translations";
+import { platformTranslations } from "@/data/platform-translations";
 
 interface LanguageContextType {
   language: Language;
@@ -28,7 +29,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [language, dir]);
 
   const t = (key: string): string => {
-    return translations[language]?.[key] || translations.en?.[key] || key;
+    return translations[language]?.[key] || platformTranslations[language]?.[key] || translations.en?.[key] || platformTranslations.en?.[key] || key;
   };
 
   return (
