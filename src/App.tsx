@@ -20,6 +20,7 @@ import FAQ from "@/pages/storefront/FAQ";
 import Dashboard from "@/pages/admin/Dashboard";
 import AdminProducts from "@/pages/admin/Products";
 import AdminOrders from "@/pages/admin/Orders";
+import Invoices from "@/pages/admin/Invoices";
 import Customers from "@/pages/admin/Customers";
 import Marketing from "@/pages/admin/Marketing";
 import Analytics from "@/pages/admin/Analytics";
@@ -39,6 +40,7 @@ import Plans from "@/pages/superadmin/Plans";
 import PlatformBilling from "@/pages/superadmin/PlatformBilling";
 import FeatureFlags from "@/pages/superadmin/FeatureFlags";
 import AuditLogs from "@/pages/superadmin/AuditLogs";
+import PlatformSettings from "@/pages/superadmin/PlatformSettings";
 
 // Onboarding
 import StoreOnboarding from "@/pages/onboarding/StoreOnboarding";
@@ -70,6 +72,7 @@ const App = () => (
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/products" element={<AdminProducts />} />
             <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/invoices" element={<Invoices />} />
             <Route path="/admin/customers" element={<Customers />} />
             <Route path="/admin/marketing" element={<Marketing />} />
             <Route path="/admin/analytics" element={<Analytics />} />
@@ -89,6 +92,7 @@ const App = () => (
             <Route path="/super-admin/billing" element={<PlatformBilling />} />
             <Route path="/super-admin/feature-flags" element={<FeatureFlags />} />
             <Route path="/super-admin/audit-logs" element={<AuditLogs />} />
+            <Route path="/super-admin/settings" element={<PlatformSettings />} />
 
             {/* Onboarding */}
             <Route path="/onboarding" element={<StoreOnboarding />} />
