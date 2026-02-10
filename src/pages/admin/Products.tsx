@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, Star, MoreHorizontal } from "lucide-react";
+import { Search, Plus, Star, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { products as initialProducts, categories } from "@/data/mock-data";
 import { useTranslation } from "@/context/LanguageContext";
@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 const AdminProducts = () => {
@@ -20,6 +21,9 @@ const AdminProducts = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [productList, setProductList] = useState<Product[]>(initialProducts);
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const filtered = productList.filter(p => {
     const ms = p.name.toLowerCase().includes(search.toLowerCase());
@@ -44,6 +48,60 @@ const AdminProducts = () => {
     toast.success(t("common.success"), { description: newProduct.name });
   };
 
+  const handleEdit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    const fd = new FormData(e.currentTarget);
+    const cat = categories.find(c => c.slug === fd.get("category")) || categories[0];
+    setProductList(prev => prev.map(p => p.id === editingProduct.id ? {
+      ...p,
+      name: fd.get("name") as string,
+      slug: (fd.get("name") as string).toLowerCase().replace(/\s+/g, "-"),
+      description: fd.get("description") as string,
+      price: Number(fd.get("price")),
+      compareAtPrice: fd.get("comparePrice") ? Number(fd.get("comparePrice")) : undefined,
+      category: cat.name,
+      categorySlug: cat.slug,
+      stockCount: Number(fd.get("stock") || 0),
+      inStock: Number(fd.get("stock") || 0) > 0,
+      tags: (fd.get("tags") as string || "").split(",").map(t => t.trim()).filter(Boolean),
+    } : p));
+    setEditOpen(false);
+    setEditingProduct(null);
+    toast.success(t("common.success"), { description: "Product updated" });
+  };
+
+  const handleDelete = (id: string) => {
+    setProductList(prev => prev.filter(p => p.id !== id));
+    setDeleteConfirmId(null);
+    toast.success("Product deleted");
+  };
+
+  const openEdit = (product: Product) => {
+    setEditingProduct(product);
+    setEditOpen(true);
+  };
+
+  const ProductForm = ({ onSubmit, defaultValues, title }: { onSubmit: (e: React.FormEvent<HTMLFormElement>) => void; defaultValues?: Product; title: string }) => (
+    <form onSubmit={onSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pe-2">
+      <div><Label className="font-body text-sm">{t("form.productName")}</Label><Input name="name" required className="mt-1" defaultValue={defaultValues?.name} /></div>
+      <div><Label className="font-body text-sm">{t("form.description")}</Label><Textarea name="description" required className="mt-1" defaultValue={defaultValues?.description} /></div>
+      <div className="grid grid-cols-2 gap-4">
+        <div><Label className="font-body text-sm">{t("form.price")}</Label><Input name="price" type="number" step="0.01" required className="mt-1" defaultValue={defaultValues?.price} /></div>
+        <div><Label className="font-body text-sm">{t("form.comparePrice")}</Label><Input name="comparePrice" type="number" step="0.01" className="mt-1" defaultValue={defaultValues?.compareAtPrice} /></div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div><Label className="font-body text-sm">{t("form.category")}</Label>
+          <Select name="category" defaultValue={defaultValues?.categorySlug || "clothing"}><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>
+            {categories.map(c => <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>)}
+          </SelectContent></Select></div>
+        <div><Label className="font-body text-sm">{t("form.stock")}</Label><Input name="stock" type="number" required className="mt-1" defaultValue={defaultValues?.stockCount} /></div>
+      </div>
+      <div><Label className="font-body text-sm">{t("form.tags")}</Label><Input name="tags" className="mt-1" placeholder="luxury, premium" defaultValue={defaultValues?.tags.join(", ")} /></div>
+      <Button type="submit" className="w-full font-body">{t("form.save")}</Button>
+    </form>
+  );
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -52,23 +110,7 @@ const AdminProducts = () => {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><Button className="font-body"><Plus className="w-4 h-4 me-2" />{t("admin.addProduct")}</Button></DialogTrigger>
             <DialogContent className="max-w-lg"><DialogHeader><DialogTitle className="font-display">{t("admin.addProduct")}</DialogTitle></DialogHeader>
-              <form onSubmit={handleAdd} className="space-y-4 max-h-[70vh] overflow-y-auto pe-2">
-                <div><Label className="font-body text-sm">{t("form.productName")}</Label><Input name="name" required className="mt-1" /></div>
-                <div><Label className="font-body text-sm">{t("form.description")}</Label><Textarea name="description" required className="mt-1" /></div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div><Label className="font-body text-sm">{t("form.price")}</Label><Input name="price" type="number" step="0.01" required className="mt-1" /></div>
-                  <div><Label className="font-body text-sm">{t("form.comparePrice")}</Label><Input name="comparePrice" type="number" step="0.01" className="mt-1" /></div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div><Label className="font-body text-sm">{t("form.category")}</Label>
-                    <Select name="category" defaultValue="clothing"><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>
-                      {categories.map(c => <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>)}
-                    </SelectContent></Select></div>
-                  <div><Label className="font-body text-sm">{t("form.stock")}</Label><Input name="stock" type="number" required className="mt-1" /></div>
-                </div>
-                <div><Label className="font-body text-sm">{t("form.tags")}</Label><Input name="tags" className="mt-1" placeholder="luxury, premium" /></div>
-                <Button type="submit" className="w-full font-body">{t("form.save")}</Button>
-              </form>
+              <ProductForm onSubmit={handleAdd} title={t("admin.addProduct")} />
             </DialogContent>
           </Dialog>
         </div>
@@ -93,11 +135,39 @@ const AdminProducts = () => {
               <TableCell className="text-right"><span className={`font-body text-sm ${p.stockCount < 20 ? "text-warning font-medium" : "text-foreground"}`}>{p.stockCount}</span></TableCell>
               <TableCell><div className="flex items-center gap-1"><Star className="w-3 h-3 fill-accent text-accent" /><span className="font-body text-sm">{p.rating}</span></div></TableCell>
               <TableCell><Badge variant={p.inStock ? "outline" : "destructive"} className="font-body text-xs">{p.inStock ? t("common.active") : t("product.soldOut")}</Badge></TableCell>
-              <TableCell><Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast.info(`${t("common.edit")}: ${p.name}`)}><MoreHorizontal className="w-4 h-4" /></Button></TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button></DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="font-body text-sm">
+                    <DropdownMenuItem onClick={() => openEdit(p)}><Edit className="w-4 h-4 me-2" />{t("common.edit")}</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setDeleteConfirmId(p.id)} className="text-destructive"><Trash2 className="w-4 h-4 me-2" />{t("common.delete")}</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
             </TableRow>
           ))}</TableBody></Table>
         </div></div>
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={editOpen} onOpenChange={(open) => { setEditOpen(open); if (!open) setEditingProduct(null); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle className="font-display">{t("common.edit")} Product</DialogTitle></DialogHeader>
+          {editingProduct && <ProductForm onSubmit={handleEdit} defaultValues={editingProduct} title={`${t("common.edit")} Product`} />}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <Dialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="font-display">Delete Product?</DialogTitle></DialogHeader>
+          <p className="font-body text-sm text-muted-foreground">This action cannot be undone. The product will be permanently removed.</p>
+          <div className="flex gap-2 pt-2">
+            <Button variant="outline" className="flex-1 font-body" onClick={() => setDeleteConfirmId(null)}>{t("common.cancel")}</Button>
+            <Button variant="destructive" className="flex-1 font-body" onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}>{t("common.delete")}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };

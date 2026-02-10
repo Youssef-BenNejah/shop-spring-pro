@@ -136,9 +136,12 @@ export const translations: Record<Language, Record<string, string>> = {
     "admin.items": "items",
     "admin.left": "left",
     "admin.export": "Export",
+    "admin.categories": "Categories",
+    "admin.addCategory": "Add Category",
 
     // Admin Product Form
     "form.productName": "Product Name",
+    "form.categoryName": "Category Name",
     "form.description": "Description",
     "form.price": "Price",
     "form.comparePrice": "Compare at Price",
@@ -420,8 +423,11 @@ export const translations: Record<Language, Record<string, string>> = {
     "admin.items": "articles",
     "admin.left": "restant",
     "admin.export": "Exporter",
+    "admin.categories": "Catégories",
+    "admin.addCategory": "Ajouter une Catégorie",
 
     "form.productName": "Nom du Produit",
+    "form.categoryName": "Nom de la Catégorie",
     "form.description": "Description",
     "form.price": "Prix",
     "form.comparePrice": "Prix Comparé",
@@ -694,8 +700,11 @@ export const translations: Record<Language, Record<string, string>> = {
     "admin.items": "عناصر",
     "admin.left": "متبقي",
     "admin.export": "تصدير",
+    "admin.categories": "الفئات",
+    "admin.addCategory": "إضافة فئة",
 
     "form.productName": "اسم المنتج",
+    "form.categoryName": "اسم الفئة",
     "form.description": "الوصف",
     "form.price": "السعر",
     "form.comparePrice": "سعر المقارنة",

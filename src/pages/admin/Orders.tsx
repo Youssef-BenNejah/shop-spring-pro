@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Download, Eye } from "lucide-react";
+import { Search, Download, Eye, Truck, Package, CheckCircle, XCircle } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { sampleOrders } from "@/data/mock-data";
 import { useTranslation } from "@/context/LanguageContext";
@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Order } from "@/types/ecommerce";
 import { toast } from "sonner";
 
@@ -20,14 +21,35 @@ const AdminOrders = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [selected, setSelected] = useState<Order | null>(null);
-  const statuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
-  const filtered = sampleOrders.filter(o => { const ms = o.orderNumber.toLowerCase().includes(search.toLowerCase()) || o.customer.name.toLowerCase().includes(search.toLowerCase()); return ms && (!statusFilter || o.status === statusFilter); });
+  const [orders, setOrders] = useState<Order[]>(sampleOrders);
+  const statuses = ["pending", "processing", "shipped", "delivered", "cancelled"] as const;
+
+  const filtered = orders.filter(o => {
+    const ms = o.orderNumber.toLowerCase().includes(search.toLowerCase()) || o.customer.name.toLowerCase().includes(search.toLowerCase());
+    return ms && (!statusFilter || o.status === statusFilter);
+  });
+
+  const updateOrderStatus = (orderId: string, newStatus: Order["status"]) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+    if (selected?.id === orderId) {
+      setSelected(prev => prev ? { ...prev, status: newStatus } : null);
+    }
+    toast.success(`Order status updated to ${newStatus}`);
+  };
+
+  const updatePaymentStatus = (orderId: string, newStatus: Order["paymentStatus"]) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, paymentStatus: newStatus } : o));
+    if (selected?.id === orderId) {
+      setSelected(prev => prev ? { ...prev, paymentStatus: newStatus } : null);
+    }
+    toast.success(`Payment status updated to ${newStatus}`);
+  };
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div><h1 className="font-display text-2xl text-foreground">{t("admin.orders")}</h1><p className="font-body text-sm text-muted-foreground mt-1">{sampleOrders.length} {t("admin.totalOrders")}</p></div>
+          <div><h1 className="font-display text-2xl text-foreground">{t("admin.orders")}</h1><p className="font-body text-sm text-muted-foreground mt-1">{orders.length} {t("admin.totalOrders")}</p></div>
           <Button variant="outline" className="font-body" onClick={() => toast.success("CSV exported")}><Download className="w-4 h-4 me-2" />{t("admin.export")}</Button>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
@@ -60,15 +82,66 @@ const AdminOrders = () => {
       </div>
 
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent><DialogHeader><DialogTitle className="font-display">{selected?.orderNumber}</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle className="font-display">{selected?.orderNumber}</DialogTitle></DialogHeader>
           {selected && (<div className="space-y-4">
             <div><p className="font-body text-sm"><strong>{t("customers.name")}:</strong> {selected.customer.name}</p><p className="font-body text-sm text-muted-foreground">{selected.customer.email}</p></div>
+            {selected.shippingAddress && <p className="font-body text-sm text-muted-foreground">📍 {selected.shippingAddress}</p>}
             <Separator />
             <div className="space-y-2">{selected.items.map((item, i) => (<div key={i} className="flex justify-between font-body text-sm"><span>{item.name} × {item.quantity}</span><span>${(item.price * item.quantity).toFixed(2)}</span></div>))}</div>
             <Separator />
-            <div className="space-y-1 font-body text-sm"><div className="flex justify-between"><span>{t("cart.subtotal")}</span><span>${selected.subtotal.toFixed(2)}</span></div><div className="flex justify-between"><span>{t("cart.shipping")}</span><span>${selected.shipping.toFixed(2)}</span></div><div className="flex justify-between"><span>{t("cart.tax")}</span><span>${selected.tax.toFixed(2)}</span></div><div className="flex justify-between font-semibold text-base"><span>{t("cart.total")}</span><span>${selected.total.toFixed(2)}</span></div></div>
+            <div className="space-y-1 font-body text-sm">
+              <div className="flex justify-between"><span>{t("cart.subtotal")}</span><span>${selected.subtotal.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span>{t("cart.shipping")}</span><span>${selected.shipping.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span>{t("cart.tax")}</span><span>${selected.tax.toFixed(2)}</span></div>
+              <div className="flex justify-between font-semibold text-base"><span>{t("cart.total")}</span><span>${selected.total.toFixed(2)}</span></div>
+            </div>
+            <Separator />
+            {/* Status management */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="font-body text-xs text-muted-foreground mb-1 block">Order Status</label>
+                <Select value={selected.status} onValueChange={(v) => updateOrderStatus(selected.id, v as Order["status"])}>
+                  <SelectTrigger className="font-body text-sm"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {statuses.map(s => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="font-body text-xs text-muted-foreground mb-1 block">Payment Status</label>
+                <Select value={selected.paymentStatus} onValueChange={(v) => updatePaymentStatus(selected.id, v as Order["paymentStatus"])}>
+                  <SelectTrigger className="font-body text-sm"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="refunded">Refunded</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {/* Quick actions */}
             <div className="flex gap-2 pt-2">
-              <Button className="flex-1 font-body" onClick={() => { toast.success("Order status updated"); setSelected(null); }}>Mark Shipped</Button>
+              {selected.status === "pending" && (
+                <Button className="flex-1 font-body" onClick={() => updateOrderStatus(selected.id, "processing")}>
+                  <Package className="w-4 h-4 me-2" />Start Processing
+                </Button>
+              )}
+              {selected.status === "processing" && (
+                <Button className="flex-1 font-body" onClick={() => updateOrderStatus(selected.id, "shipped")}>
+                  <Truck className="w-4 h-4 me-2" />Mark Shipped
+                </Button>
+              )}
+              {selected.status === "shipped" && (
+                <Button className="flex-1 font-body" onClick={() => updateOrderStatus(selected.id, "delivered")}>
+                  <CheckCircle className="w-4 h-4 me-2" />Mark Delivered
+                </Button>
+              )}
+              {selected.status !== "cancelled" && selected.status !== "delivered" && (
+                <Button variant="destructive" className="font-body" onClick={() => updateOrderStatus(selected.id, "cancelled")}>
+                  <XCircle className="w-4 h-4 me-2" />Cancel
+                </Button>
+              )}
               <Button variant="outline" className="font-body" onClick={() => { toast.success("Invoice downloaded"); }}>Invoice PDF</Button>
             </div>
           </div>)}
