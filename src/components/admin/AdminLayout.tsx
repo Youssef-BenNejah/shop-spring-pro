@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Users, Tag, Settings, BarChart3, Menu, X, Store, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, Tag, Settings, BarChart3, Menu, X, Store, LogOut, FileText } from "lucide-react";
 import { useTranslation } from "@/context/LanguageContext";
 import ThemeToggle from "@/components/shared/ThemeToggle";
 import LanguageSelector from "@/components/shared/LanguageSelector";
@@ -14,6 +14,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     { label: t("admin.dashboard"), path: "/admin", icon: LayoutDashboard },
     { label: t("admin.products"), path: "/admin/products", icon: Package },
     { label: t("admin.orders"), path: "/admin/orders", icon: ShoppingCart },
+    { label: "Invoices", path: "/admin/invoices", icon: FileText },
     { label: t("admin.customers"), path: "/admin/customers", icon: Users },
     { label: t("admin.marketing"), path: "/admin/marketing", icon: Tag },
     { label: t("admin.analytics"), path: "/admin/analytics", icon: BarChart3 },

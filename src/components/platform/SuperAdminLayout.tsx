@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Store, CreditCard, Receipt, ToggleLeft, Shield, Headphones, Menu, X, LogOut, Globe } from "lucide-react";
+import { LayoutDashboard, Store, CreditCard, Receipt, ToggleLeft, Shield, Menu, X, LogOut, Globe, Settings } from "lucide-react";
 import { useTranslation } from "@/context/LanguageContext";
 import ThemeToggle from "@/components/shared/ThemeToggle";
 import LanguageSelector from "@/components/shared/LanguageSelector";
@@ -17,6 +17,7 @@ const SuperAdminLayout = ({ children }: { children: ReactNode }) => {
     { label: t("superAdmin.billing"), path: "/super-admin/billing", icon: Receipt },
     { label: t("superAdmin.featureFlags"), path: "/super-admin/feature-flags", icon: ToggleLeft },
     { label: t("superAdmin.auditLogs"), path: "/super-admin/audit-logs", icon: Shield },
+    { label: t("admin.settings"), path: "/super-admin/settings", icon: Settings },
   ];
 
   const isActive = (path: string) => path === "/super-admin" ? location.pathname === "/super-admin" : location.pathname.startsWith(path);
