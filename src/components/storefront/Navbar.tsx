@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { ShoppingBag, Search, User, Menu, X } from "lucide-react";
+import { ShoppingBag, Search, User, Menu, X, Heart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { useTranslation } from "@/context/LanguageContext";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import LanguageSelector from "@/components/shared/LanguageSelector";
 
 const Navbar = () => {
   const { itemCount, toggleCart } = useCart();
+  const { itemCount: wishlistCount } = useWishlist();
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -44,8 +46,18 @@ const Navbar = () => {
           <div className="flex items-center gap-0.5">
             <LanguageSelector />
             <ThemeToggle />
+            <Button variant="ghost" size="icon" className="relative text-foreground" asChild>
+              <Link to="/wishlist">
+                <Heart className="w-5 h-5" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-xs font-semibold flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+            </Button>
             <Button variant="ghost" size="icon" className="text-foreground" asChild>
-              <Link to="/auth"><User className="w-5 h-5" /></Link>
+              <Link to="/account"><User className="w-5 h-5" /></Link>
             </Button>
             <Button variant="ghost" size="icon" className="relative text-foreground" onClick={toggleCart}>
               <ShoppingBag className="w-5 h-5" />

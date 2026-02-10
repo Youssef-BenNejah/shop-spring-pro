@@ -4,6 +4,7 @@ import StorefrontLayout from "@/components/storefront/StorefrontLayout";
 import ProductCard from "@/components/storefront/ProductCard";
 import { getProductBySlug, products } from "@/data/mock-data";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { useTranslation } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -14,10 +15,10 @@ const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const product = getProductBySlug(slug || "");
   const { addItem } = useCart();
+  const { toggleItem, isWishlisted } = useWishlist();
   const { t } = useTranslation();
   const [quantity, setQuantity] = useState(1);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
-  const [wishlisted, setWishlisted] = useState(false);
 
   if (!product) {
     return (
@@ -89,8 +90,8 @@ const ProductDetail = () => {
               <Button size="lg" className="flex-1 font-body" disabled={!product.inStock} onClick={handleAddToBag}>
                 <ShoppingBag className="w-4 h-4 me-2" />{product.inStock ? t("product.addToBag") : t("product.soldOut")}
               </Button>
-              <Button variant="outline" size="icon" className="h-11 w-11" onClick={() => { setWishlisted(!wishlisted); toast.success(wishlisted ? "Removed from wishlist" : "Added to wishlist"); }}>
-                <Heart className={`w-5 h-5 ${wishlisted ? "fill-destructive text-destructive" : ""}`} />
+              <Button variant="outline" size="icon" className="h-11 w-11" onClick={() => { const added = toggleItem(product); toast.success(added ? "Added to wishlist" : "Removed from wishlist"); }}>
+                <Heart className={`w-5 h-5 ${isWishlisted(product.id) ? "fill-destructive text-destructive" : ""}`} />
               </Button>
             </div>
             <p className="font-body text-xs text-muted-foreground mb-6">{product.inStock ? `${product.stockCount} ${t("product.inStock")}` : t("product.soldOut")}</p>

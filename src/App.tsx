@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 
 // Storefront
 import Home from "@/pages/storefront/Home";
@@ -15,10 +16,13 @@ import Auth from "@/pages/storefront/Auth";
 import About from "@/pages/storefront/About";
 import Contact from "@/pages/storefront/Contact";
 import FAQ from "@/pages/storefront/FAQ";
+import Account from "@/pages/storefront/Account";
+import Wishlist from "@/pages/storefront/Wishlist";
 
 // Store Admin
 import Dashboard from "@/pages/admin/Dashboard";
 import AdminProducts from "@/pages/admin/Products";
+import AdminCategories from "@/pages/admin/Categories";
 import AdminOrders from "@/pages/admin/Orders";
 import Invoices from "@/pages/admin/Invoices";
 import Customers from "@/pages/admin/Customers";
@@ -53,6 +57,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <CartProvider>
+      <WishlistProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -67,10 +72,13 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/wishlist" element={<Wishlist />} />
 
             {/* Store Admin */}
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/products" element={<AdminProducts />} />
+            <Route path="/admin/categories" element={<AdminCategories />} />
             <Route path="/admin/orders" element={<AdminOrders />} />
             <Route path="/admin/invoices" element={<Invoices />} />
             <Route path="/admin/customers" element={<Customers />} />
@@ -97,9 +105,10 @@ const App = () => (
             {/* Onboarding */}
             <Route path="/onboarding" element={<StoreOnboarding />} />
 
-            <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+      </WishlistProvider>
       </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>
