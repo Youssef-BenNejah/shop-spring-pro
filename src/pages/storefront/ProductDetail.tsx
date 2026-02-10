@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { Star, Minus, Plus, ShoppingBag, Heart, ArrowLeft, Truck, RotateCcw, Shield } from "lucide-react";
+import { Star, Minus, Plus, ShoppingBag, Heart, ArrowLeft, Truck, RotateCcw, Shield, Ruler, Palette, Maximize, Layers, Scale, Sparkles, Settings } from "lucide-react";
 import StorefrontLayout from "@/components/storefront/StorefrontLayout";
 import ProductCard from "@/components/storefront/ProductCard";
 import { getProductBySlug, products } from "@/data/mock-data";
@@ -95,6 +95,32 @@ const ProductDetail = () => {
               </Button>
             </div>
             <p className="font-body text-xs text-muted-foreground mb-6">{product.inStock ? `${product.stockCount} ${t("product.inStock")}` : t("product.soldOut")}</p>
+
+            {product.attributes && product.attributes.length > 0 && (
+              <div className="py-5 border-t border-border space-y-3">
+                <h3 className="font-body text-sm font-semibold text-foreground">Product Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {product.attributes.map(attr => {
+                    const iconMap: Record<string, React.ReactNode> = {
+                      sizes: <Ruler className="w-4 h-4" />, colors: <Palette className="w-4 h-4" />,
+                      dimensions: <Maximize className="w-4 h-4" />, material: <Layers className="w-4 h-4" />,
+                      weight: <Scale className="w-4 h-4" />, care_instructions: <Sparkles className="w-4 h-4" />,
+                      custom: <Settings className="w-4 h-4" />,
+                    };
+                    return (
+                      <div key={attr.id} className="flex items-start gap-2.5 p-3 bg-secondary/40 rounded-lg">
+                        <span className="text-muted-foreground mt-0.5">{iconMap[attr.type]}</span>
+                        <div>
+                          <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{attr.label}</p>
+                          <p className="font-body text-sm text-foreground mt-0.5">{attr.value}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-3 gap-4 py-6 border-t border-border">
               <div className="text-center"><Truck className="w-5 h-5 mx-auto mb-1 text-muted-foreground" /><p className="font-body text-xs text-muted-foreground">{t("product.freeShipping")}</p></div>
               <div className="text-center"><RotateCcw className="w-5 h-5 mx-auto mb-1 text-muted-foreground" /><p className="font-body text-xs text-muted-foreground">{t("product.returns")}</p></div>

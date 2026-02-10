@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Search, Plus, Star, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { Search, Plus, Star, MoreHorizontal, Edit, Trash2, Ruler, Palette, Maximize, Layers, Scale, Sparkles, Settings, X } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { products as initialProducts, categories } from "@/data/mock-data";
 import { useTranslation } from "@/context/LanguageContext";
-import { Product } from "@/types/ecommerce";
+import { Product, ProductAttribute, ProductAttributeType, ATTRIBUTE_PRESETS } from "@/types/ecommerce";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,79 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
+const ATTR_ICONS: Record<string, React.ReactNode> = {
+  Ruler: <Ruler className="w-4 h-4" />,
+  Palette: <Palette className="w-4 h-4" />,
+  Maximize: <Maximize className="w-4 h-4" />,
+  Layers: <Layers className="w-4 h-4" />,
+  Scale: <Scale className="w-4 h-4" />,
+  Sparkles: <Sparkles className="w-4 h-4" />,
+  Settings: <Settings className="w-4 h-4" />,
+};
+
+const AttributesEditor = ({ attributes, onChange }: { attributes: ProductAttribute[]; onChange: (attrs: ProductAttribute[]) => void }) => {
+  const addAttribute = (type: ProductAttributeType) => {
+    const preset = ATTRIBUTE_PRESETS.find(p => p.type === type)!;
+    const existing = attributes.find(a => a.type === type && type !== "custom");
+    if (existing) return;
+    onChange([...attributes, { id: `attr-${Date.now()}`, type, label: type === "custom" ? "" : preset.label, value: "" }]);
+  };
+
+  const updateAttribute = (id: string, field: "label" | "value", val: string) => {
+    onChange(attributes.map(a => a.id === id ? { ...a, [field]: val } : a));
+  };
+
+  const removeAttribute = (id: string) => {
+    onChange(attributes.filter(a => a.id !== id));
+  };
+
+  const usedTypes = attributes.map(a => a.type);
+  const availablePresets = ATTRIBUTE_PRESETS.filter(p => p.type === "custom" || !usedTypes.includes(p.type));
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <Label className="font-body text-sm font-medium">Product Attributes</Label>
+      </div>
+
+      {attributes.length > 0 && (
+        <div className="space-y-2">
+          {attributes.map(attr => {
+            const preset = ATTRIBUTE_PRESETS.find(p => p.type === attr.type);
+            return (
+              <div key={attr.id} className="flex items-start gap-2 p-3 border border-border rounded-lg bg-secondary/30">
+                <div className="mt-1.5 text-muted-foreground">{ATTR_ICONS[preset?.icon || "Settings"]}</div>
+                <div className="flex-1 space-y-2">
+                  {attr.type === "custom" ? (
+                    <Input placeholder="Attribute name" value={attr.label} onChange={e => updateAttribute(attr.id, "label", e.target.value)} className="h-8 text-sm" />
+                  ) : (
+                    <span className="font-body text-sm font-medium text-foreground">{attr.label}</span>
+                  )}
+                  <Input placeholder={preset?.placeholder || "Enter value"} value={attr.value} onChange={e => updateAttribute(attr.id, "value", e.target.value)} className="h-8 text-sm" />
+                </div>
+                <button onClick={() => removeAttribute(attr.id)} className="mt-1.5 text-muted-foreground hover:text-destructive transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {availablePresets.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {availablePresets.map(preset => (
+            <button key={`${preset.type}-${preset.label}`} type="button" onClick={() => addAttribute(preset.type)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-body border border-dashed border-border rounded-md text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+              {ATTR_ICONS[preset.icon]}<span>+ {preset.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const AdminProducts = () => {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
@@ -24,6 +97,7 @@ const AdminProducts = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [formAttributes, setFormAttributes] = useState<ProductAttribute[]>([]);
 
   const filtered = productList.filter(p => {
     const ms = p.name.toLowerCase().includes(search.toLowerCase());
@@ -42,9 +116,11 @@ const AdminProducts = () => {
       images: ["/placeholder.svg"], category: cat.name, categorySlug: cat.slug,
       tags: (fd.get("tags") as string || "").split(",").map(t => t.trim()).filter(Boolean),
       rating: 0, reviewCount: 0, inStock: true, stockCount: Number(fd.get("stock") || 0),
+      attributes: formAttributes.filter(a => a.value.trim()),
     };
     setProductList(prev => [newProduct, ...prev]);
     setOpen(false);
+    setFormAttributes([]);
     toast.success(t("common.success"), { description: newProduct.name });
   };
 
@@ -65,9 +141,11 @@ const AdminProducts = () => {
       stockCount: Number(fd.get("stock") || 0),
       inStock: Number(fd.get("stock") || 0) > 0,
       tags: (fd.get("tags") as string || "").split(",").map(t => t.trim()).filter(Boolean),
+      attributes: formAttributes.filter(a => a.value.trim()),
     } : p));
     setEditOpen(false);
     setEditingProduct(null);
+    setFormAttributes([]);
     toast.success(t("common.success"), { description: "Product updated" });
   };
 
@@ -79,7 +157,13 @@ const AdminProducts = () => {
 
   const openEdit = (product: Product) => {
     setEditingProduct(product);
+    setFormAttributes(product.attributes || []);
     setEditOpen(true);
+  };
+
+  const openAdd = () => {
+    setFormAttributes([]);
+    setOpen(true);
   };
 
   const ProductForm = ({ onSubmit, defaultValues, title }: { onSubmit: (e: React.FormEvent<HTMLFormElement>) => void; defaultValues?: Product; title: string }) => (
@@ -98,6 +182,11 @@ const AdminProducts = () => {
         <div><Label className="font-body text-sm">{t("form.stock")}</Label><Input name="stock" type="number" required className="mt-1" defaultValue={defaultValues?.stockCount} /></div>
       </div>
       <div><Label className="font-body text-sm">{t("form.tags")}</Label><Input name="tags" className="mt-1" placeholder="luxury, premium" defaultValue={defaultValues?.tags.join(", ")} /></div>
+
+      <div className="border-t border-border pt-4">
+        <AttributesEditor attributes={formAttributes} onChange={setFormAttributes} />
+      </div>
+
       <Button type="submit" className="w-full font-body">{t("form.save")}</Button>
     </form>
   );
@@ -108,7 +197,7 @@ const AdminProducts = () => {
         <div className="flex items-center justify-between">
           <div><h1 className="font-display text-2xl text-foreground">{t("admin.products")}</h1><p className="font-body text-sm text-muted-foreground mt-1">{productList.length} {t("admin.totalProducts")}</p></div>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button className="font-body"><Plus className="w-4 h-4 me-2" />{t("admin.addProduct")}</Button></DialogTrigger>
+            <DialogTrigger asChild><Button className="font-body" onClick={openAdd}><Plus className="w-4 h-4 me-2" />{t("admin.addProduct")}</Button></DialogTrigger>
             <DialogContent className="max-w-lg"><DialogHeader><DialogTitle className="font-display">{t("admin.addProduct")}</DialogTitle></DialogHeader>
               <ProductForm onSubmit={handleAdd} title={t("admin.addProduct")} />
             </DialogContent>
@@ -125,7 +214,7 @@ const AdminProducts = () => {
           <Table><TableHeader><TableRow>
             <TableHead className="font-body text-xs">{t("admin.products")}</TableHead><TableHead className="font-body text-xs">{t("form.category")}</TableHead>
             <TableHead className="font-body text-xs text-right">{t("form.price")}</TableHead><TableHead className="font-body text-xs text-right">{t("form.stock")}</TableHead>
-            <TableHead className="font-body text-xs">Rating</TableHead><TableHead className="font-body text-xs">{t("form.status")}</TableHead><TableHead className="w-10"></TableHead>
+            <TableHead className="font-body text-xs">Rating</TableHead><TableHead className="font-body text-xs">Attrs</TableHead><TableHead className="font-body text-xs">{t("form.status")}</TableHead><TableHead className="w-10"></TableHead>
           </TableRow></TableHeader>
           <TableBody>{filtered.map(p => (
             <TableRow key={p.id} className="hover:bg-secondary/30">
@@ -134,6 +223,7 @@ const AdminProducts = () => {
               <TableCell className="font-body text-sm text-foreground text-right">${p.price}{p.compareAtPrice && <span className="text-xs text-muted-foreground line-through ms-1">${p.compareAtPrice}</span>}</TableCell>
               <TableCell className="text-right"><span className={`font-body text-sm ${p.stockCount < 20 ? "text-warning font-medium" : "text-foreground"}`}>{p.stockCount}</span></TableCell>
               <TableCell><div className="flex items-center gap-1"><Star className="w-3 h-3 fill-accent text-accent" /><span className="font-body text-sm">{p.rating}</span></div></TableCell>
+              <TableCell><span className="font-body text-sm text-muted-foreground">{p.attributes?.length || 0}</span></TableCell>
               <TableCell><Badge variant={p.inStock ? "outline" : "destructive"} className="font-body text-xs">{p.inStock ? t("common.active") : t("product.soldOut")}</Badge></TableCell>
               <TableCell>
                 <DropdownMenu>
@@ -150,7 +240,7 @@ const AdminProducts = () => {
       </div>
 
       {/* Edit Dialog */}
-      <Dialog open={editOpen} onOpenChange={(open) => { setEditOpen(open); if (!open) setEditingProduct(null); }}>
+      <Dialog open={editOpen} onOpenChange={(open) => { setEditOpen(open); if (!open) { setEditingProduct(null); setFormAttributes([]); } }}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle className="font-display">{t("common.edit")} Product</DialogTitle></DialogHeader>
           {editingProduct && <ProductForm onSubmit={handleEdit} defaultValues={editingProduct} title={`${t("common.edit")} Product`} />}

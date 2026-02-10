@@ -1,4 +1,4 @@
-import { Product, Category, Order } from "@/types/ecommerce";
+import { Product, Category, Order, ProductAttribute } from "@/types/ecommerce";
 
 export interface Customer {
   id: string;
@@ -41,6 +41,12 @@ export const products: Product[] = [
       { id: "v1", name: "Size", type: "size", options: ["XS", "S", "M", "L", "XL"] },
       { id: "v2", name: "Color", type: "color", options: ["Ivory", "Charcoal", "Camel"] },
     ],
+    attributes: [
+      { id: "a1", type: "sizes", label: "Sizes", value: "XS, S, M, L, XL" },
+      { id: "a2", type: "colors", label: "Colors", value: "Ivory, Charcoal, Camel" },
+      { id: "a3", type: "material", label: "Material", value: "100% Cashmere" },
+      { id: "a4", type: "care_instructions", label: "Care Instructions", value: "Dry clean only" },
+    ],
   },
   {
     id: "2", name: "Tailored Wool Coat", slug: "wool-coat",
@@ -78,6 +84,12 @@ export const products: Product[] = [
     category: "Accessories", categorySlug: "accessories", tags: ["leather", "bags", "bestseller"],
     rating: 4.9, reviewCount: 312, inStock: true, stockCount: 34,
     variants: [{ id: "v7", name: "Color", type: "color", options: ["Tan", "Black", "Cognac"] }],
+    attributes: [
+      { id: "a5", type: "colors", label: "Colors", value: "Tan, Black, Cognac" },
+      { id: "a6", type: "material", label: "Material", value: "Full-grain Italian Leather" },
+      { id: "a7", type: "dimensions", label: "Dimensions (W × H)", value: "38 × 32 cm" },
+      { id: "a8", type: "weight", label: "Weight", value: "680g" },
+    ],
   },
   {
     id: "6", name: "Gold Minimal Watch", slug: "gold-watch",
@@ -99,6 +111,11 @@ export const products: Product[] = [
     price: 185, images: ["/placeholder.svg"],
     category: "Home", categorySlug: "home", tags: ["ceramics", "decor", "handmade"],
     rating: 4.7, reviewCount: 45, inStock: true, stockCount: 28,
+    attributes: [
+      { id: "a9", type: "dimensions", label: "Dimensions (W × H)", value: "12 × 25 cm, 10 × 20 cm, 8 × 15 cm" },
+      { id: "a10", type: "material", label: "Material", value: "Handcrafted Stoneware Ceramic" },
+      { id: "a11", type: "weight", label: "Weight", value: "1.2kg (set)" },
+    ],
   },
   {
     id: "9", name: "Linen Throw Blanket", slug: "linen-throw",
