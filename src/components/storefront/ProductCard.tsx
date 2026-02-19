@@ -40,8 +40,8 @@ const ProductCard = ({ product, index = 0 }: { product: Product; index?: number 
           <h3 className="font-body text-sm font-medium text-foreground leading-snug group-hover:text-accent transition-colors">{product.name}</h3>
         </Link>
         <div className="flex items-center gap-2">
-          <span className="font-body text-sm font-semibold text-foreground">${product.price}</span>
-          {product.compareAtPrice && <span className="font-body text-xs text-muted-foreground line-through">${product.compareAtPrice}</span>}
+          <span className="font-body text-sm font-semibold text-foreground">{product.price} TND</span>
+          {product.compareAtPrice && <span className="font-body text-xs text-muted-foreground line-through">{product.compareAtPrice} TND</span>}
         </div>
         <div className="flex items-center gap-1">
           <Star className="w-3 h-3 fill-accent text-accent" />

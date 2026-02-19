@@ -37,10 +37,10 @@ const returnRateByCategory = [
 ];
 
 const customerSegments = [
-  { name: "VIP (>$500)", value: 8, avgSpend: 1240, fill: "hsl(38, 85%, 55%)" },
-  { name: "Regular ($100-500)", value: 35, avgSpend: 280, fill: "hsl(210, 80%, 55%)" },
-  { name: "Occasional ($50-100)", value: 42, avgSpend: 72, fill: "hsl(152, 60%, 40%)" },
-  { name: "One-time (<$50)", value: 15, avgSpend: 34, fill: "hsl(220, 10%, 45%)" },
+  { name: "VIP (>500 TND)", value: 8, avgSpend: 1240, fill: "hsl(38, 85%, 55%)" },
+  { name: "Regular (100-500 TND)", value: 35, avgSpend: 280, fill: "hsl(210, 80%, 55%)" },
+  { name: "Occasional (50-100 TND)", value: 42, avgSpend: 72, fill: "hsl(152, 60%, 40%)" },
+  { name: "One-time (<50 TND)", value: 15, avgSpend: 34, fill: "hsl(220, 10%, 45%)" },
 ];
 
 const channelPerformance = [
@@ -98,9 +98,9 @@ const Analytics = () => {
         {/* KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
           {[
-            { label: "Revenue", value: `$${totalRevenue.toLocaleString()}`, change: "+15.2%", pos: true, icon: DollarSign },
+            { label: "Revenue", value: `${totalRevenue.toLocaleString()} TND`, change: "+15.2%", pos: true, icon: DollarSign },
             { label: "Orders", value: totalOrders.toString(), change: "+11.4%", pos: true, icon: ShoppingCart },
-            { label: "AOV", value: `$${(totalRevenue / totalOrders).toFixed(0)}`, change: "+3.1%", pos: true, icon: TrendingUp },
+            { label: "AOV", value: `${(totalRevenue / totalOrders).toFixed(0)} TND`, change: "+3.1%", pos: true, icon: TrendingUp },
             { label: "Visitors", value: totalVisitors.toLocaleString(), change: "+22.8%", pos: true, icon: Eye },
             { label: "Cart Abandon", value: `${avgAbandonment}%`, change: "-4.2%", pos: true, icon: Package },
             { label: "Repeat Rate", value: "34%", change: "+6.1%", pos: true, icon: Repeat },
@@ -143,7 +143,7 @@ const Analytics = () => {
                       <YAxis yAxisId="right" orientation="right" className="font-body text-xs" />
                       <Tooltip contentStyle={{ fontFamily: "DM Sans", fontSize: 12, borderRadius: 8 }} />
                       <Legend wrapperStyle={{ fontFamily: "DM Sans", fontSize: 11 }} />
-                      <Area yAxisId="left" type="monotone" dataKey="revenue" name="Revenue ($)" stroke="hsl(38, 85%, 55%)" fill="hsl(38, 85%, 55%)" fillOpacity={0.12} strokeWidth={2.5} />
+                      <Area yAxisId="left" type="monotone" dataKey="revenue" name="Revenue (TND)" stroke="hsl(38, 85%, 55%)" fill="hsl(38, 85%, 55%)" fillOpacity={0.12} strokeWidth={2.5} />
                       <Line yAxisId="right" type="monotone" dataKey="orders" name="Orders" stroke="hsl(210, 80%, 55%)" strokeWidth={2} dot={{ r: 3 }} />
                     </ComposedChart>
                   </ResponsiveContainer>
@@ -161,7 +161,7 @@ const Analytics = () => {
                         <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                         <XAxis dataKey="month" className="font-body text-xs" />
                         <YAxis className="font-body text-xs" domain={[120, 180]} />
-                        <Tooltip contentStyle={{ fontFamily: "DM Sans", fontSize: 12, borderRadius: 8 }} formatter={(v: number) => `$${v}`} />
+                        <Tooltip contentStyle={{ fontFamily: "DM Sans", fontSize: 12, borderRadius: 8 }} formatter={(v: number) => `${v} TND`} />
                         <Area type="monotone" dataKey="aov" stroke="hsl(152, 60%, 40%)" fill="hsl(152, 60%, 40%)" fillOpacity={0.12} strokeWidth={2} />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -210,7 +210,7 @@ const Analytics = () => {
                           <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.fill }} />
                           <span className="font-body text-xs text-foreground">{s.name}</span>
                         </div>
-                        <span className="font-body text-xs text-muted-foreground">Avg: ${s.avgSpend}</span>
+                        <span className="font-body text-xs text-muted-foreground">Avg: {s.avgSpend} TND</span>
                       </div>
                     ))}
                   </div>
@@ -294,7 +294,7 @@ const Analytics = () => {
                           <td className="font-body text-sm font-medium text-foreground py-3 px-3">{ch.channel}</td>
                           <td className="font-body text-sm text-muted-foreground py-3 px-3">{ch.visitors.toLocaleString()}</td>
                           <td className="font-body text-sm text-foreground py-3 px-3">{ch.orders}</td>
-                          <td className="font-body text-sm font-semibold text-foreground py-3 px-3">${ch.revenue.toLocaleString()}</td>
+                          <td className="font-body text-sm font-semibold text-foreground py-3 px-3">{ch.revenue.toLocaleString()} TND</td>
                           <td className="py-3 px-3">
                             <Badge variant={ch.conv >= 5 ? "outline" : "secondary"} className={`font-body text-xs ${ch.conv >= 5 ? "text-success border-success/30" : ""}`}>{ch.conv}%</Badge>
                           </td>
@@ -315,7 +315,7 @@ const Analytics = () => {
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                       <XAxis dataKey="channel" className="font-body text-xs" />
                       <YAxis className="font-body text-xs" />
-                      <Tooltip contentStyle={{ fontFamily: "DM Sans", fontSize: 12, borderRadius: 8 }} formatter={(v: number) => `$${v.toLocaleString()}`} />
+                      <Tooltip contentStyle={{ fontFamily: "DM Sans", fontSize: 12, borderRadius: 8 }} formatter={(v: number) => `${v.toLocaleString()} TND`} />
                       <Bar dataKey="revenue" name="Revenue" fill="hsl(38, 85%, 55%)" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>

@@ -152,12 +152,12 @@ const Overview = () => {
 
         {/* KPI Row */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
-          <MiniStat label="Monthly Recurring Revenue" value={`$${platformStats.mrr}`} change="+8.1%" positive icon={DollarSign} accent />
-          <MiniStat label="Annual Run Rate" value={`$${platformStats.arr.toLocaleString()}`} change="+8.1%" positive icon={TrendingUp} />
+          <MiniStat label="Monthly Recurring Revenue" value={`${platformStats.mrr} TND`} change="+8.1%" positive icon={DollarSign} accent />
+          <MiniStat label="Annual Run Rate" value={`${platformStats.arr.toLocaleString()} TND`} change="+8.1%" positive icon={TrendingUp} />
           <MiniStat label="Total Stores" value={platformStats.totalStores.toString()} icon={Store} />
           <MiniStat label="Active Stores" value={platformStats.activeStores.toString()} change="+1" positive icon={CheckCircle} />
           <MiniStat label="Churn Rate" value={`${platformStats.churnRate}%`} change="-0.6%" positive icon={TrendingDown} />
-          <MiniStat label="Platform GMV" value={`$${(totalGMV / 1000).toFixed(0)}k`} change="+11.8%" positive icon={ShoppingCart} accent />
+          <MiniStat label="Platform GMV" value={`${(totalGMV / 1000).toFixed(0)}k TND`} change="+11.8%" positive icon={ShoppingCart} accent />
         </div>
 
         {/* MRR Growth + Net Revenue */}
@@ -199,7 +199,7 @@ const Overview = () => {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="month" className="font-body text-xs" />
                     <YAxis className="font-body text-xs" />
-                    <Tooltip contentStyle={{ fontFamily: "DM Sans", fontSize: 12, borderRadius: 8 }} formatter={(v: number) => `$${v.toLocaleString()}`} />
+                    <Tooltip contentStyle={{ fontFamily: "DM Sans", fontSize: 12, borderRadius: 8 }} formatter={(v: number) => `${v.toLocaleString()} TND`} />
                     <Legend wrapperStyle={{ fontFamily: "DM Sans", fontSize: 11 }} />
                     <Bar dataKey="gmv" name="GMV" fill="hsl(38, 85%, 55%)" fillOpacity={0.3} radius={[3, 3, 0, 0]} />
                     <Line type="monotone" dataKey="commission" name="Commission (5%)" stroke="hsl(152, 60%, 40%)" strokeWidth={2.5} dot={{ r: 3 }} />
@@ -235,7 +235,7 @@ const Overview = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="font-body text-xs text-muted-foreground">{p.count} stores</span>
-                      <span className="font-body text-xs font-semibold text-foreground">${p.revenue}/mo</span>
+                      <span className="font-body text-xs font-semibold text-foreground">{p.revenue} TND/mo</span>
                     </div>
                   </div>
                 ))}
@@ -273,7 +273,7 @@ const Overview = () => {
                   <div key={p.plan}>
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-body text-xs font-medium text-foreground">{p.plan}</span>
-                      <span className="font-body text-xs font-bold text-foreground">${p.ltv.toLocaleString()}</span>
+                      <span className="font-body text-xs font-bold text-foreground">{p.ltv.toLocaleString()} TND</span>
                     </div>
                     <Progress value={(p.ltv / 5000) * 100} className="h-2" />
                     <div className="flex items-center justify-between mt-1">
@@ -375,11 +375,11 @@ const Overview = () => {
                         <div className="flex items-center gap-4 font-body text-xs text-muted-foreground">
                           <span>{s.productCount} products</span>
                           <span>{s.orderCount.toLocaleString()} orders</span>
-                          <span>MRR: ${s.mrr}/mo</span>
+                          <span>MRR: {s.mrr} TND/mo</span>
                         </div>
                       </div>
                       <div className="text-end">
-                        <p className="font-body text-sm font-bold text-foreground">${s.revenue.toLocaleString()}</p>
+                        <p className="font-body text-sm font-bold text-foreground">{s.revenue.toLocaleString()} TND</p>
                         <p className="font-body text-[10px] text-muted-foreground">Total GMV</p>
                       </div>
                     </div>
@@ -396,11 +396,11 @@ const Overview = () => {
               <div className="space-y-3">
                 <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
                   <p className="font-body text-xs font-medium text-accent mb-1">📈 Revenue Insight</p>
-                  <p className="font-body text-[11px] text-muted-foreground">ARPU is <span className="font-semibold text-foreground">${avgRevenuePerStore.toFixed(0)}/mo</span>. Target: move 2 Starter stores to Pro for <span className="font-semibold text-foreground">+$100/mo MRR</span>.</p>
+                  <p className="font-body text-[11px] text-muted-foreground">ARPU is <span className="font-semibold text-foreground">{avgRevenuePerStore.toFixed(0)} TND/mo</span>. Target: move 2 Starter stores to Pro for <span className="font-semibold text-foreground">+100 TND/mo MRR</span>.</p>
                 </div>
                 <div className="p-3 rounded-lg bg-warning/5 border border-warning/20">
                   <p className="font-body text-xs font-medium text-warning mb-1">⚠️ Churn Risk</p>
-                  <p className="font-body text-[11px] text-muted-foreground"><span className="font-semibold text-foreground">Digital Hub</span> suspended with $29 failed payment. Trigger re-engagement campaign.</p>
+                  <p className="font-body text-[11px] text-muted-foreground"><span className="font-semibold text-foreground">Digital Hub</span> suspended with 29 TND failed payment. Trigger re-engagement campaign.</p>
                 </div>
                 <div className="p-3 rounded-lg bg-success/5 border border-success/20">
                   <p className="font-body text-xs font-medium text-success mb-1">🎯 Trial Pipeline</p>
@@ -408,7 +408,7 @@ const Overview = () => {
                 </div>
                 <div className="p-3 rounded-lg bg-info/5 border border-info/20">
                   <p className="font-body text-xs font-medium text-info mb-1">💰 GMV Opportunity</p>
-                  <p className="font-body text-[11px] text-muted-foreground">Total platform GMV: <span className="font-semibold text-foreground">${(totalGMV / 1000).toFixed(0)}k</span>. Commission earned: <span className="font-semibold text-foreground">${(totalCommission / 1000).toFixed(1)}k</span> (5%).</p>
+                  <p className="font-body text-[11px] text-muted-foreground">Total platform GMV: <span className="font-semibold text-foreground">{(totalGMV / 1000).toFixed(0)}k TND</span>. Commission earned: <span className="font-semibold text-foreground">{(totalCommission / 1000).toFixed(1)}k TND</span> (5%).</p>
                 </div>
 
                 {/* Health Scores */}

@@ -33,7 +33,7 @@ const CartDrawer = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-body text-sm font-medium text-foreground truncate">{item.product.name}</h4>
-                    <p className="font-body text-sm text-muted-foreground">${item.product.price}</p>
+                    <p className="font-body text-sm text-muted-foreground">{item.product.price} TND</p>
                     <div className="flex items-center gap-2 mt-2">
                       <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="w-7 h-7 rounded border border-border flex items-center justify-center hover:bg-secondary transition-colors"><Minus className="w-3 h-3" /></button>
                       <span className="font-body text-sm w-6 text-center">{item.quantity}</span>
@@ -47,7 +47,7 @@ const CartDrawer = () => {
             <div className="border-t border-border pt-4 space-y-3">
               <div className="flex justify-between font-body text-sm">
                 <span className="text-muted-foreground">{t("cart.subtotal")}</span>
-                <span className="font-semibold text-foreground">${subtotal.toFixed(2)}</span>
+                <span className="font-semibold text-foreground">{subtotal.toFixed(2)} TND</span>
               </div>
               <p className="font-body text-xs text-muted-foreground">{t("cart.shippingCalculated")}</p>
               <Button className="w-full" size="lg" onClick={() => setCartOpen(false)} asChild>

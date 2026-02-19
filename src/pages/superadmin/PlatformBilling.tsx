@@ -28,7 +28,7 @@ const PlatformBilling = () => {
             <TableRow key={inv.id} className="hover:bg-secondary/30">
               <TableCell className="font-body text-sm font-medium text-foreground">{inv.invoiceNumber}</TableCell>
               <TableCell className="font-body text-sm text-foreground">{inv.storeName}</TableCell>
-              <TableCell className="font-body text-sm font-semibold text-foreground text-right">${inv.amount}</TableCell>
+              <TableCell className="font-body text-sm font-semibold text-foreground text-right">{inv.amount} TND</TableCell>
               <TableCell><Badge variant="outline" className={`font-body text-xs capitalize ${statusColors[inv.status]}`}>{inv.status}</Badge></TableCell>
               <TableCell className="font-body text-xs text-muted-foreground">{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
               <TableCell>

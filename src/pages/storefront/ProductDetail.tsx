@@ -60,8 +60,8 @@ const ProductDetail = () => {
               <span className="font-body text-sm text-muted-foreground">{product.rating} ({product.reviewCount} {t("product.reviews")})</span>
             </div>
             <div className="flex items-baseline gap-3 mb-6">
-              <span className="font-body text-2xl font-semibold text-foreground">${product.price}</span>
-              {product.compareAtPrice && <span className="font-body text-lg text-muted-foreground line-through">${product.compareAtPrice}</span>}
+              <span className="font-body text-2xl font-semibold text-foreground">{product.price} TND</span>
+              {product.compareAtPrice && <span className="font-body text-lg text-muted-foreground line-through">{product.compareAtPrice} TND</span>}
             </div>
             <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">{product.description}</p>
 
