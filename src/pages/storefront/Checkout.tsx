@@ -14,11 +14,11 @@ const Checkout = () => {
   const { items, subtotal, clearCart } = useCart();
   const { t } = useTranslation();
   const [step, setStep] = useState<"shipping" | "payment" | "done">("shipping");
-  const [shippingMethod, setShippingMethod] = useState("standard");
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "delivery">("card");
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
 
-  const shipping = shippingMethod === "express" ? 25 : subtotal > 200 ? 0 : 15;
+  const shipping = 7;
   const tax = (subtotal - discount) * 0.08;
   const total = subtotal - discount + shipping + tax;
 
@@ -86,33 +86,32 @@ const Checkout = () => {
               </div>
             </div>
 
-            {/* Shipping Method */}
+            {/* Payment Method */}
             <div className="space-y-3">
-              <h2 className="font-display text-xl text-foreground">{t("checkout.shippingMethod")}</h2>
+              <h2 className="font-display text-xl text-foreground">{t("checkout.payment")}</h2>
               <div className="space-y-2">
-                {[{ id: "standard", label: t("checkout.standard"), price: subtotal > 200 ? t("cart.free") : "$15.00" }, { id: "express", label: t("checkout.express"), price: "$25.00" }].map(m => (
-                  <label key={m.id} className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-colors ${shippingMethod === m.id ? "border-foreground bg-secondary/50" : "border-border"}`}>
-                    <div className="flex items-center gap-3">
-                      <input type="radio" name="shipping" checked={shippingMethod === m.id} onChange={() => setShippingMethod(m.id)} className="accent-foreground" />
-                      <span className="font-body text-sm">{m.label}</span>
-                    </div>
-                    <span className="font-body text-sm font-medium">{m.price}</span>
+                {[{ id: "card" as const, label: t("checkout.cardNumber") ? "Pay Online (Card)" : "Pay Online (Card)" }, { id: "delivery" as const, label: "Cash on Delivery" }].map(m => (
+                  <label key={m.id} className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${paymentMethod === m.id ? "border-foreground bg-secondary/50" : "border-border"}`}>
+                    <input type="radio" name="payment" checked={paymentMethod === m.id} onChange={() => setPaymentMethod(m.id)} className="accent-foreground" />
+                    <span className="font-body text-sm">{m.label}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            {/* Payment */}
-            <div className="space-y-4">
-              <h2 className="font-display text-xl text-foreground">{t("checkout.payment")}</h2>
-              <div><Label className="font-body text-sm">{t("checkout.cardNumber")}</Label><Input required placeholder="4242 4242 4242 4242" className="mt-1" /></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label className="font-body text-sm">{t("checkout.expiry")}</Label><Input required placeholder="12/28" className="mt-1" /></div>
-                <div><Label className="font-body text-sm">{t("checkout.cvc")}</Label><Input required placeholder="123" className="mt-1" /></div>
+            {/* Card Details (only if online) */}
+            {paymentMethod === "card" && (
+              <div className="space-y-4">
+                <h2 className="font-display text-xl text-foreground">Card Details</h2>
+                <div><Label className="font-body text-sm">{t("checkout.cardNumber")}</Label><Input required placeholder="4242 4242 4242 4242" className="mt-1" /></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label className="font-body text-sm">{t("checkout.expiry")}</Label><Input required placeholder="12/28" className="mt-1" /></div>
+                  <div><Label className="font-body text-sm">{t("checkout.cvc")}</Label><Input required placeholder="123" className="mt-1" /></div>
+                </div>
               </div>
-            </div>
+            )}
 
-            <Button type="submit" size="lg" className="w-full font-body">{t("checkout.placeOrder")} — ${total.toFixed(2)}</Button>
+            <Button type="submit" size="lg" className="w-full font-body">{t("checkout.placeOrder")} — {total.toFixed(2)} TND</Button>
           </form>
 
           {/* Summary */}
@@ -123,7 +122,7 @@ const Checkout = () => {
                 {items.map(item => (
                   <div key={item.product.id} className="flex justify-between font-body text-sm">
                     <span className="text-foreground">{item.product.name} × {item.quantity}</span>
-                    <span className="text-foreground">${(item.product.price * item.quantity).toFixed(2)}</span>
+                    <span className="text-foreground">{(item.product.price * item.quantity).toFixed(2)} TND</span>
                   </div>
                 ))}
               </div>
@@ -133,13 +132,13 @@ const Checkout = () => {
                 <Button variant="outline" onClick={handleApplyPromo} className="font-body text-sm shrink-0">{t("checkout.apply")}</Button>
               </div>
               <div className="space-y-2">
-                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.subtotal")}</span><span>${subtotal.toFixed(2)}</span></div>
-                {discount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-success">Discount</span><span className="text-success">-${discount.toFixed(2)}</span></div>}
-                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.shipping")}</span><span>{shipping === 0 ? t("cart.free") : `$${shipping.toFixed(2)}`}</span></div>
-                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.tax")}</span><span>${tax.toFixed(2)}</span></div>
+                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.subtotal")}</span><span>{subtotal.toFixed(2)} TND</span></div>
+                {discount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-success">Discount</span><span className="text-success">-{discount.toFixed(2)} TND</span></div>}
+                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.shipping")}</span><span>{shipping.toFixed(2)} TND</span></div>
+                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.tax")}</span><span>{tax.toFixed(2)} TND</span></div>
               </div>
               <Separator />
-              <div className="flex justify-between font-body"><span className="font-semibold">{t("cart.total")}</span><span className="font-semibold text-lg">${total.toFixed(2)}</span></div>
+              <div className="flex justify-between font-body"><span className="font-semibold">{t("cart.total")}</span><span className="font-semibold text-lg">{total.toFixed(2)} TND</span></div>
             </div>
           </div>
         </div>
