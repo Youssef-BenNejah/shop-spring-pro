@@ -135,7 +135,7 @@ const Invoices = () => {
                         <div className="col-span-5"><Input placeholder="Item description" value={item.name} onChange={e => { const n = [...lineItems]; n[i].name = e.target.value; setLineItems(n); }} /></div>
                         <div className="col-span-2"><Input type="number" placeholder="Qty" value={item.qty} onChange={e => { const n = [...lineItems]; n[i].qty = Number(e.target.value); setLineItems(n); }} /></div>
                         <div className="col-span-3"><Input type="number" step="0.01" placeholder="Unit price" value={item.unitPrice || ""} onChange={e => { const n = [...lineItems]; n[i].unitPrice = Number(e.target.value); setLineItems(n); }} /></div>
-                        <div className="col-span-1 text-end font-body text-sm font-medium">${(item.qty * item.unitPrice).toFixed(2)}</div>
+                        <div className="col-span-1 text-end font-body text-sm font-medium">{(item.qty * item.unitPrice).toFixed(2)} TND</div>
                         <div className="col-span-1">{lineItems.length > 1 && <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setLineItems(prev => prev.filter((_, j) => j !== i))}><Ban className="w-3 h-3" /></Button>}</div>
                       </div>
                     ))}
@@ -143,8 +143,8 @@ const Invoices = () => {
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div><Label className="font-body text-sm">Tax Rate (%)</Label><Input name="taxRate" type="number" step="0.01" defaultValue="8" className="mt-1" /></div>
-                  <div><Label className="font-body text-sm">{t("cart.shipping")} ($)</Label><Input name="shipping" type="number" step="0.01" defaultValue="0" className="mt-1" /></div>
-                  <div><Label className="font-body text-sm">Discount ($)</Label><Input name="discount" type="number" step="0.01" defaultValue="0" className="mt-1" /></div>
+                  <div><Label className="font-body text-sm">{t("cart.shipping")} (TND)</Label><Input name="shipping" type="number" step="0.01" defaultValue="0" className="mt-1" /></div>
+                  <div><Label className="font-body text-sm">Discount (TND)</Label><Input name="discount" type="number" step="0.01" defaultValue="0" className="mt-1" /></div>
                 </div>
                 <div><Label className="font-body text-sm">Notes</Label><Textarea name="notes" className="mt-1" placeholder="Additional notes for this invoice..." /></div>
                 <Button type="submit" className="w-full font-body">Create Invoice</Button>
@@ -156,9 +156,9 @@ const Invoices = () => {
         {/* KPIs */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Total Invoiced", value: `$${invoices.reduce((s, i) => s + i.total, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}` },
-            { label: "Collected", value: `$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}` },
-            { label: "Outstanding", value: `$${totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2 })}` },
+            { label: "Total Invoiced", value: `${invoices.reduce((s, i) => s + i.total, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} TND` },
+            { label: "Collected", value: `${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })} TND` },
+            { label: "Outstanding", value: `${totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2 })} TND` },
             { label: "Overdue", value: invoices.filter(i => i.status === "overdue").length.toString() },
           ].map(k => (
             <div key={k.label} className="p-4 rounded-lg border border-border bg-card">
@@ -194,7 +194,7 @@ const Invoices = () => {
               <TableCell className="font-body text-sm font-medium text-foreground">{inv.invoiceNumber}</TableCell>
               <TableCell><p className="font-body text-sm text-foreground">{inv.customerName}</p><p className="font-body text-xs text-muted-foreground">{inv.customerEmail}</p></TableCell>
               <TableCell className="font-body text-sm text-muted-foreground">{inv.orderNumber || "—"}</TableCell>
-              <TableCell className="font-body text-sm font-semibold text-foreground text-right">${inv.total.toFixed(2)}</TableCell>
+              <TableCell className="font-body text-sm font-semibold text-foreground text-right">{inv.total.toFixed(2)} TND</TableCell>
               <TableCell><Badge variant="outline" className={`font-body text-xs capitalize ${statusColors[inv.status]}`}>{inv.status}</Badge></TableCell>
               <TableCell className="font-body text-xs text-muted-foreground">{new Date(inv.issuedAt).toLocaleDateString()}</TableCell>
               <TableCell className="font-body text-xs text-muted-foreground">{new Date(inv.dueAt).toLocaleDateString()}</TableCell>
@@ -240,18 +240,18 @@ const Invoices = () => {
                   <TableRow key={i}>
                     <TableCell className="font-body text-sm">{item.name}</TableCell>
                     <TableCell className="font-body text-sm text-right">{item.qty}</TableCell>
-                    <TableCell className="font-body text-sm text-right">${item.unitPrice.toFixed(2)}</TableCell>
-                    <TableCell className="font-body text-sm font-medium text-right">${item.total.toFixed(2)}</TableCell>
+                    <TableCell className="font-body text-sm text-right">{item.unitPrice.toFixed(2)} TND</TableCell>
+                    <TableCell className="font-body text-sm font-medium text-right">{item.total.toFixed(2)} TND</TableCell>
                   </TableRow>
                 ))}
               </TableBody></Table>
               <div className="space-y-1 pt-2">
-                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.subtotal")}</span><span>${selected.subtotal.toFixed(2)}</span></div>
-                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.tax")} ({selected.taxRate}%)</span><span>${selected.tax.toFixed(2)}</span></div>
-                {selected.shipping > 0 && <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.shipping")}</span><span>${selected.shipping.toFixed(2)}</span></div>}
-                {selected.discount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-success">Discount</span><span className="text-success">-${selected.discount.toFixed(2)}</span></div>}
+                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.subtotal")}</span><span>{selected.subtotal.toFixed(2)} TND</span></div>
+                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.tax")} ({selected.taxRate}%)</span><span>{selected.tax.toFixed(2)} TND</span></div>
+                {selected.shipping > 0 && <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.shipping")}</span><span>{selected.shipping.toFixed(2)} TND</span></div>}
+                {selected.discount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-success">Discount</span><span className="text-success">-{selected.discount.toFixed(2)} TND</span></div>}
                 <Separator />
-                <div className="flex justify-between font-body text-base font-semibold"><span>{t("cart.total")}</span><span>${selected.total.toFixed(2)}</span></div>
+                <div className="flex justify-between font-body text-base font-semibold"><span>{t("cart.total")}</span><span>{selected.total.toFixed(2)} TND</span></div>
               </div>
               {selected.notes && <div className="bg-secondary/30 rounded-lg p-3"><p className="font-body text-xs text-muted-foreground">Notes</p><p className="font-body text-sm mt-1">{selected.notes}</p></div>}
               <div className="flex gap-2 pt-2">

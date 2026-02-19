@@ -48,7 +48,7 @@ const Stores = () => {
               <TableCell><p className="font-body text-sm text-foreground">{s.ownerName}</p><p className="font-body text-xs text-muted-foreground">{s.ownerEmail}</p></TableCell>
               <TableCell><Badge variant="secondary" className="font-body text-xs capitalize">{s.planTier}</Badge></TableCell>
               <TableCell><Badge variant="outline" className={`font-body text-xs capitalize ${statusColors[s.status]}`}>{s.status}</Badge></TableCell>
-              <TableCell className="font-body text-sm font-semibold text-foreground text-right">${s.revenue.toLocaleString()}</TableCell>
+              <TableCell className="font-body text-sm font-semibold text-foreground text-right">{s.revenue.toLocaleString()} TND</TableCell>
               <TableCell className="font-body text-sm text-foreground text-right">{s.productCount}</TableCell>
               <TableCell><Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelected(s)}><Eye className="w-4 h-4" /></Button></TableCell>
             </TableRow>
@@ -64,7 +64,7 @@ const Stores = () => {
               <div><p className="font-body text-xs text-muted-foreground">Email</p><p className="font-body text-sm">{selected.ownerEmail}</p></div>
               <div><p className="font-body text-xs text-muted-foreground">Plan</p><Badge variant="secondary" className="font-body text-xs capitalize">{selected.planTier}</Badge></div>
               <div><p className="font-body text-xs text-muted-foreground">Status</p><Badge variant="outline" className={`font-body text-xs capitalize ${statusColors[selected.status]}`}>{selected.status}</Badge></div>
-              <div><p className="font-body text-xs text-muted-foreground">Revenue</p><p className="font-body text-sm font-semibold">${selected.revenue.toLocaleString()}</p></div>
+              <div><p className="font-body text-xs text-muted-foreground">Revenue</p><p className="font-body text-sm font-semibold">{selected.revenue.toLocaleString()} TND</p></div>
               <div><p className="font-body text-xs text-muted-foreground">Created</p><p className="font-body text-sm">{new Date(selected.createdAt).toLocaleDateString()}</p></div>
             </div>
             <div className="grid grid-cols-2 gap-2 pt-2">

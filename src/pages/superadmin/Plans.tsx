@@ -21,7 +21,7 @@ const Plans = () => {
                   {plan.popular && <Badge className="font-body text-[10px]">{t("pricing.popular")}</Badge>}
                 </div>
                 <p className="font-body text-xs text-muted-foreground">{plan.description}</p>
-                <p className="font-display text-2xl font-semibold text-foreground mt-2">${plan.monthlyPrice}<span className="font-body text-sm text-muted-foreground">{t("pricing.mo")}</span></p>
+                <p className="font-display text-2xl font-semibold text-foreground mt-2">{plan.monthlyPrice} TND<span className="font-body text-sm text-muted-foreground">{t("pricing.mo")}</span></p>
               </CardHeader>
               <CardContent>
                 <p className="font-body text-xs font-medium text-foreground uppercase tracking-wider mb-3">{t("superAdmin.planLimits")}</p>

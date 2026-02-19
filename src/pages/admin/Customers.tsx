@@ -73,7 +73,7 @@ const Customers = () => {
                   <TableCell className="font-body text-sm font-medium text-foreground">{c.name}</TableCell>
                   <TableCell className="font-body text-sm text-muted-foreground">{c.email}</TableCell>
                   <TableCell className="font-body text-sm text-foreground text-right">{c.orders}</TableCell>
-                  <TableCell className="font-body text-sm font-semibold text-foreground text-right">${c.totalSpent.toLocaleString()}</TableCell>
+                  <TableCell className="font-body text-sm font-semibold text-foreground text-right">{c.totalSpent.toLocaleString()} TND</TableCell>
                   <TableCell className="font-body text-xs text-muted-foreground">{new Date(c.joinedAt).toLocaleDateString()}</TableCell>
                   <TableCell><Badge variant={c.status === "active" ? "outline" : "destructive"} className="font-body text-xs">{c.status === "active" ? t("customers.active") : t("customers.blocked")}</Badge></TableCell>
                   <TableCell>
@@ -105,9 +105,9 @@ const Customers = () => {
                 <div><p className="font-body text-xs text-muted-foreground">{t("customers.email")}</p><p className="font-body text-sm">{selected.email}</p></div>
                 <div><p className="font-body text-xs text-muted-foreground">{t("customers.status")}</p><Badge variant={selected.status === "active" ? "outline" : "destructive"} className="font-body text-xs">{selected.status}</Badge></div>
                 <div><p className="font-body text-xs text-muted-foreground">{t("customers.orders")}</p><p className="font-body text-sm font-semibold">{selected.orders}</p></div>
-                <div><p className="font-body text-xs text-muted-foreground">{t("customers.spent")}</p><p className="font-body text-sm font-semibold">${selected.totalSpent.toLocaleString()}</p></div>
+                <div><p className="font-body text-xs text-muted-foreground">{t("customers.spent")}</p><p className="font-body text-sm font-semibold">{selected.totalSpent.toLocaleString()} TND</p></div>
                 <div><p className="font-body text-xs text-muted-foreground">{t("customers.joined")}</p><p className="font-body text-sm">{new Date(selected.joinedAt).toLocaleDateString()}</p></div>
-                <div><p className="font-body text-xs text-muted-foreground">Avg. Order</p><p className="font-body text-sm">${selected.orders > 0 ? (selected.totalSpent / selected.orders).toFixed(2) : "0"}</p></div>
+                <div><p className="font-body text-xs text-muted-foreground">Avg. Order</p><p className="font-body text-sm">{selected.orders > 0 ? (selected.totalSpent / selected.orders).toFixed(2) : "0"} TND</p></div>
               </div>
               <Separator />
               {selected.notes && (

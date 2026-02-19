@@ -258,7 +258,7 @@ const Settings = () => {
                 </SelectContent></Select></div>
               <div><Label className="font-body text-sm">Invoice Currency Display</Label>
                 <Select defaultValue="symbol"><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>
-                  <SelectItem value="symbol">Symbol ($100.00)</SelectItem><SelectItem value="code">Code (USD 100.00)</SelectItem><SelectItem value="both">Both ($100.00 USD)</SelectItem>
+                  <SelectItem value="symbol">Symbol (100.00 TND)</SelectItem><SelectItem value="code">Code (TND 100.00)</SelectItem><SelectItem value="both">Both (100.00 TND)</SelectItem>
                 </SelectContent></Select></div>
             </div>
             <Separator />

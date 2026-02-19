@@ -56,11 +56,11 @@ const Pricing = () => {
                   <span className="font-display text-3xl font-semibold text-foreground">{t("pricing.free")}</span>
                 ) : (
                   <div className="flex items-baseline gap-1">
-                    <span className="font-display text-3xl font-semibold text-foreground">${yearly ? Math.round(plan.yearlyPrice / 12) : plan.monthlyPrice}</span>
+                    <span className="font-display text-3xl font-semibold text-foreground">{yearly ? Math.round(plan.yearlyPrice / 12) : plan.monthlyPrice} TND</span>
                     <span className="font-body text-sm text-muted-foreground">{t("pricing.mo")}</span>
                   </div>
                 )}
-                {yearly && plan.yearlyPrice > 0 && <p className="font-body text-xs text-muted-foreground mt-1">${plan.yearlyPrice}{t("pricing.yr")}</p>}
+                {yearly && plan.yearlyPrice > 0 && <p className="font-body text-xs text-muted-foreground mt-1">{plan.yearlyPrice} TND{t("pricing.yr")}</p>}
               </div>
               <Button className="w-full font-body mb-6" variant={plan.popular ? "default" : "outline"} asChild>
                 <Link to={plan.tier === "enterprise" ? "/platform/contact-sales" : "/onboarding"}>

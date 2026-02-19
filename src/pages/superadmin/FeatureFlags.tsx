@@ -213,7 +213,7 @@ const FeatureFlagsPage = () => {
                                     {enabled ? "✓" : "✕"}
                                   </div>
                                   <span className="font-body text-xs font-medium text-foreground capitalize">{tier}</span>
-                                  <span className="font-body text-[10px] text-muted-foreground">${plan?.monthlyPrice || 0}/mo</span>
+                                  <span className="font-body text-[10px] text-muted-foreground">{plan?.monthlyPrice || 0} TND/mo</span>
                                 </button>
                               );
                             })}
@@ -255,7 +255,7 @@ const FeatureFlagsPage = () => {
                           return (
                             <th key={tier} className="p-4 text-center min-w-[100px]">
                               <span className="font-body text-xs font-semibold text-foreground capitalize block">{tier}</span>
-                              <span className="font-body text-[10px] text-muted-foreground">${plan?.monthlyPrice || 0}/mo</span>
+                              <span className="font-body text-[10px] text-muted-foreground">{plan?.monthlyPrice || 0} TND/mo</span>
                             </th>
                           );
                         })}

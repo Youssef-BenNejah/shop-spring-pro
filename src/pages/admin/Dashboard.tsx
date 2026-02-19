@@ -175,9 +175,9 @@ const Dashboard = () => {
 
         {/* KPI Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-          <MiniStat label="Total Revenue" value={`$${totalRevenue.toLocaleString()}`} change="+12.5%" positive icon={DollarSign} />
+          <MiniStat label="Total Revenue" value={`${totalRevenue.toLocaleString()} TND`} change="+12.5%" positive icon={DollarSign} />
           <MiniStat label="Orders" value={totalOrders.toString()} change="+8.2%" positive icon={ShoppingCart} />
-          <MiniStat label="Avg Order Value" value={`$${(totalRevenue / totalOrders).toFixed(0)}`} change="-2.1%" positive={false} icon={TrendingUp} />
+          <MiniStat label="Avg Order Value" value={`${(totalRevenue / totalOrders).toFixed(0)} TND`} change="-2.1%" positive={false} icon={TrendingUp} />
           <MiniStat label="Conversion Rate" value={`${conversionRate}%`} change="+0.4%" positive icon={Target} />
           <MiniStat label="Visitors" value={totalVisitors.toLocaleString()} change="+18.3%" positive icon={Eye} />
           <MiniStat label="Repeat Customers" value="34%" change="+5.2%" positive icon={Repeat} />
@@ -251,7 +251,7 @@ const Dashboard = () => {
                     <Pie data={categoryRevenue} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value">
                       {categoryRevenue.map((entry) => <Cell key={entry.name} fill={entry.fill} />)}
                     </Pie>
-                    <Tooltip contentStyle={{ fontFamily: "DM Sans", fontSize: 12, borderRadius: 8 }} formatter={(v: number) => `$${v.toLocaleString()}`} />
+                    <Tooltip contentStyle={{ fontFamily: "DM Sans", fontSize: 12, borderRadius: 8 }} formatter={(v: number) => `${v.toLocaleString()} TND`} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -260,7 +260,7 @@ const Dashboard = () => {
                   <div key={c.name} className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.fill }} />
                     <span className="font-body text-xs text-muted-foreground truncate">{c.name}</span>
-                    <span className="font-body text-xs font-medium text-foreground ms-auto">${(c.value / 1000).toFixed(1)}k</span>
+                    <span className="font-body text-xs font-medium text-foreground ms-auto">{(c.value / 1000).toFixed(1)}k TND</span>
                   </div>
                 ))}
               </div>
@@ -344,7 +344,7 @@ const Dashboard = () => {
                       </div>
                       <Progress value={c.pct} className="h-1.5" />
                     </div>
-                    <span className="font-body text-xs font-semibold text-foreground">${(c.revenue / 1000).toFixed(1)}k</span>
+                    <span className="font-body text-xs font-semibold text-foreground">{(c.revenue / 1000).toFixed(1)}k TND</span>
                   </div>
                 ))}
               </div>
@@ -414,7 +414,7 @@ const Dashboard = () => {
                       <p className="font-body text-xs font-medium text-foreground truncate">{p.name}</p>
                       <p className="font-body text-[10px] text-muted-foreground">{p.reviewCount} sold</p>
                     </div>
-                    <span className="font-body text-xs font-semibold text-foreground">${p.price}</span>
+                    <span className="font-body text-xs font-semibold text-foreground">{p.price} TND</span>
                   </div>
                 ))}
               </div>
@@ -489,9 +489,9 @@ const Dashboard = () => {
                 </div>
                 <div className="p-3 rounded-lg bg-success/5 border border-success/20">
                   <p className="font-body text-xs font-medium text-success mb-1">🎯 Goal Tracker</p>
-                  <p className="font-body text-[11px] text-muted-foreground">Monthly revenue target: $30,000</p>
+                  <p className="font-body text-[11px] text-muted-foreground">Monthly revenue target: 30,000 TND</p>
                   <Progress value={82} className="h-1.5 mt-2" />
-                  <p className="font-body text-[10px] text-muted-foreground mt-1">$24,580 / $30,000 (82%)</p>
+                  <p className="font-body text-[10px] text-muted-foreground mt-1">24,580 / 30,000 TND (82%)</p>
                 </div>
                 <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
                   <p className="font-body text-xs font-medium text-accent mb-1">💡 Recommendation</p>
@@ -522,7 +522,7 @@ const Dashboard = () => {
                     </div>
                     <p className="font-body text-xs text-muted-foreground">{o.customer.name} · {o.items.length} items · {new Date(o.createdAt).toLocaleDateString()}</p>
                   </div>
-                  <span className="font-body text-sm font-semibold text-foreground">${o.total.toFixed(2)}</span>
+                  <span className="font-body text-sm font-semibold text-foreground">{o.total.toFixed(2)} TND</span>
                 </div>
               ))}
             </div>

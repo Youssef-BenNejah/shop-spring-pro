@@ -46,7 +46,7 @@ const CartPage = () => {
                         <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)} className="w-8 h-8 rounded border border-border flex items-center justify-center hover:bg-secondary transition-colors"><Plus className="w-3 h-3" /></button>
                         <button onClick={() => removeItem(item.product.id)} className="ms-3 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
                       </div>
-                      <span className="font-body text-sm font-semibold text-foreground">${(item.product.price * item.quantity).toFixed(2)}</span>
+                      <span className="font-body text-sm font-semibold text-foreground">{(item.product.price * item.quantity).toFixed(2)} TND</span>
                     </div>
                   </div>
                 </div>
@@ -57,13 +57,13 @@ const CartPage = () => {
                 <h2 className="font-display text-lg text-foreground">{t("cart.orderSummary")}</h2>
                 <Separator />
                 <div className="space-y-2">
-                  <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.subtotal")}</span><span className="text-foreground">${subtotal.toFixed(2)}</span></div>
-                  <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.shipping")}</span><span className="text-foreground">{shipping === 0 ? t("cart.free") : `$${shipping.toFixed(2)}`}</span></div>
-                  <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.tax")}</span><span className="text-foreground">${tax.toFixed(2)}</span></div>
+                  <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.subtotal")}</span><span className="text-foreground">{subtotal.toFixed(2)} TND</span></div>
+                  <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.shipping")}</span><span className="text-foreground">{shipping === 0 ? t("cart.free") : `${shipping.toFixed(2)} TND`}</span></div>
+                  <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">{t("cart.tax")}</span><span className="text-foreground">{tax.toFixed(2)} TND</span></div>
                 </div>
                 <Separator />
-                <div className="flex justify-between font-body"><span className="font-semibold text-foreground">{t("cart.total")}</span><span className="font-semibold text-foreground text-lg">${total.toFixed(2)}</span></div>
-                {subtotal < 200 && <p className="font-body text-xs text-muted-foreground">{t("cart.freeShippingThreshold").replace("{amount}", `$${(200 - subtotal).toFixed(2)}`)}</p>}
+                <div className="flex justify-between font-body"><span className="font-semibold text-foreground">{t("cart.total")}</span><span className="font-semibold text-foreground text-lg">{total.toFixed(2)} TND</span></div>
+                {subtotal < 200 && <p className="font-body text-xs text-muted-foreground">{t("cart.freeShippingThreshold").replace("{amount}", `${(200 - subtotal).toFixed(2)} TND`)}</p>}
                 <Button className="w-full font-body" size="lg" asChild><Link to="/checkout">{t("cart.proceedToCheckout")}</Link></Button>
                 <p className="font-body text-xs text-muted-foreground text-center">{t("cart.secureCheckout")}</p>
               </div>

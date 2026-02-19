@@ -71,7 +71,7 @@ const AdminOrders = () => {
               <TableCell className="font-body text-sm font-medium text-foreground">{o.orderNumber}</TableCell>
               <TableCell><p className="font-body text-sm text-foreground">{o.customer.name}</p><p className="font-body text-xs text-muted-foreground">{o.customer.email}</p></TableCell>
               <TableCell className="font-body text-sm text-muted-foreground">{o.items.length} {t("admin.items")}</TableCell>
-              <TableCell className="font-body text-sm font-semibold text-foreground text-right">${o.total.toFixed(2)}</TableCell>
+              <TableCell className="font-body text-sm font-semibold text-foreground text-right">{o.total.toFixed(2)} TND</TableCell>
               <TableCell><span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${sts[o.status]}`}>{o.status}</span></TableCell>
               <TableCell><span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${ps[o.paymentStatus]}`}>{o.paymentStatus}</span></TableCell>
               <TableCell className="font-body text-xs text-muted-foreground">{new Date(o.createdAt).toLocaleDateString()}</TableCell>
@@ -88,13 +88,13 @@ const AdminOrders = () => {
             <div><p className="font-body text-sm"><strong>{t("customers.name")}:</strong> {selected.customer.name}</p><p className="font-body text-sm text-muted-foreground">{selected.customer.email}</p></div>
             {selected.shippingAddress && <p className="font-body text-sm text-muted-foreground">📍 {selected.shippingAddress}</p>}
             <Separator />
-            <div className="space-y-2">{selected.items.map((item, i) => (<div key={i} className="flex justify-between font-body text-sm"><span>{item.name} × {item.quantity}</span><span>${(item.price * item.quantity).toFixed(2)}</span></div>))}</div>
+            <div className="space-y-2">{selected.items.map((item, i) => (<div key={i} className="flex justify-between font-body text-sm"><span>{item.name} × {item.quantity}</span><span>{(item.price * item.quantity).toFixed(2)} TND</span></div>))}</div>
             <Separator />
             <div className="space-y-1 font-body text-sm">
-              <div className="flex justify-between"><span>{t("cart.subtotal")}</span><span>${selected.subtotal.toFixed(2)}</span></div>
-              <div className="flex justify-between"><span>{t("cart.shipping")}</span><span>${selected.shipping.toFixed(2)}</span></div>
-              <div className="flex justify-between"><span>{t("cart.tax")}</span><span>${selected.tax.toFixed(2)}</span></div>
-              <div className="flex justify-between font-semibold text-base"><span>{t("cart.total")}</span><span>${selected.total.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span>{t("cart.subtotal")}</span><span>{selected.subtotal.toFixed(2)} TND</span></div>
+              <div className="flex justify-between"><span>{t("cart.shipping")}</span><span>{selected.shipping.toFixed(2)} TND</span></div>
+              <div className="flex justify-between"><span>{t("cart.tax")}</span><span>{selected.tax.toFixed(2)} TND</span></div>
+              <div className="flex justify-between font-semibold text-base"><span>{t("cart.total")}</span><span>{selected.total.toFixed(2)} TND</span></div>
             </div>
             <Separator />
             {/* Status management */}

@@ -55,9 +55,9 @@ const Wishlist = () => {
                     </Link>
                   </div>
                   <div className="flex items-baseline gap-2">
-                    <span className="font-body text-lg font-semibold text-foreground">${product.price}</span>
+                    <span className="font-body text-lg font-semibold text-foreground">{product.price} TND</span>
                     {product.compareAtPrice && (
-                      <span className="font-body text-sm text-muted-foreground line-through">${product.compareAtPrice}</span>
+                      <span className="font-body text-sm text-muted-foreground line-through">{product.compareAtPrice} TND</span>
                     )}
                   </div>
                   <div className="flex gap-2">

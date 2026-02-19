@@ -28,7 +28,7 @@ const Checkout = () => {
       toast.success("10% discount applied!");
     } else if (promoCode.toUpperCase() === "FLAT20") {
       setDiscount(20);
-      toast.success("$20 discount applied!");
+      toast.success("20 TND discount applied!");
     } else {
       toast.error("Invalid promo code");
     }
